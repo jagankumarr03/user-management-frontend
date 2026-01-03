@@ -13,7 +13,8 @@ function ChangePassword() {
     setError("");
 
     const res = await fetch(
-      "http://localhost:8000/api/change-password/",
+  `   ${process.env.REACT_APP_API_URL}/api/change-password/`,
+
       {
         method: "POST",
         headers: {
