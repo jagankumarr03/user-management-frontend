@@ -23,8 +23,10 @@ function Signup() {
       return;
     }
 
-    try {
-      const res = await fetch("http://localhost:8000/api/signup/", {
+   try {
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL}/api/signup/`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +36,9 @@ function Signup() {
           email,
           password,
         }),
-      });
+      }
+  );
+
 
       const data = await res.json();
 
