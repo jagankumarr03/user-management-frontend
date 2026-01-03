@@ -20,16 +20,19 @@ function Login() {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/api/token/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/api/token/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      }
+    );
 
     if (!response.ok) {
       toast.error("Invalid username or password");
@@ -41,11 +44,19 @@ function Login() {
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
 
-    const profileRes = await fetch("http://localhost:8000/api/profile/", {
-      headers: {
-        Authorization: `Bearer ${data.access}`,
-      },
-    });
+    const profileRes = await fetch(
+      `${process.env.REACT_APP_API_URL}/api/profile/`,
+      {
+        headers: {
+          Authorization: `Bearer ${data.access}`,
+        },
+      }
+    );
+
+    if (!profileRes.ok) {
+      toast.error("Failed to fetch profile");
+      return;
+    }
 
     const profile = await profileRes.json();
 
@@ -56,9 +67,11 @@ function Login() {
 
     navigate("/dashboard");
   } catch (err) {
+    console.error(err);
     toast.error("Server error. Try again.");
   }
 };
+
 
 
   return (
