@@ -15,27 +15,33 @@ function UserProfile() {
 
   const token = localStorage.getItem("access");
 
-useEffect(() => {
-  setLoading(true);
+  useEffect(() => {
+    setLoading(true);
 
-  fetch("http://localhost:8000/api/profile/", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      setTimeout(() => {
+    fetch(`${process.env.REACT_APP_API_URL}/api/profile/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
+      })
+      .then((data) => {
         setProfile(data);
         setFormData({
           username: data.username || "",
           email: data.email || "",
           phone: data.profile?.phone || "",
         });
-        setLoading(false); 
-      }, 1000);
-    });
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load profile");
+        setLoading(false);
+      });
 }, [token]);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -47,16 +53,17 @@ useEffect(() => {
     setLoading(true);
 
     const res = await fetch(
-      "http://localhost:8000/api/profile/update/",
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      }
-    );
+    `${process.env.REACT_APP_API_URL}/api/profile/update/`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+    }
+);
+
 
     const data = await res.json();
     setLoading(false);
